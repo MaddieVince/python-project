@@ -108,6 +108,7 @@ def process_weather(forecast_file):
         chance_rain_day = json_data['DailyForecasts'][day]['Day']['RainProbability']
         night_desc = json_data['DailyForecasts'][day]['Night']['LongPhrase']
         chance_rain_night = json_data['DailyForecasts'][day]['Night']['RainProbability']
+        
         if min_temp < t_temp_min:
             t_temp_min = min_temp
             t_temp_mindate = date
@@ -119,7 +120,6 @@ def process_weather(forecast_file):
         else:
             pass
         
-        temp_dict[day] = [min_temp, max_temp, date]
         daily_dict[day] = [date, min_temp, max_temp, day_desc, chance_rain_day, night_desc, chance_rain_night]
     #                       0        1          2         3          4              5              6               
     
@@ -139,7 +139,7 @@ def process_weather(forecast_file):
 
     ##############################################################################################
 
-    # Print messages to user
+    # Combine string messages to return to user
 
     str_Output = ""
     Output_gen1 = (f"{num_items} Day Overview\n")
@@ -165,6 +165,4 @@ def process_weather(forecast_file):
 if __name__ == "__main__":
     print(process_weather("data/forecast_5days_a.json"))
 
-# if __name__ == "__main__":
-#     process_weather("data/forecast_5days_b.json")
 
