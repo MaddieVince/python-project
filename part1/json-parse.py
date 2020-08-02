@@ -4,7 +4,7 @@ from datetime import datetime
 ###################################################################################
 # Load json data file
 
-with open("data/forecast_5days_a.json") as json_file:
+with open("data/forecast_8days.json") as json_file:
     json_data = json.load(json_file)
 
 # print(json_data)
@@ -57,7 +57,8 @@ def days_in_data(len_days):
 
 # Set Variables, Dictionaries and Lists
 days_list = []
-my_dict = {}
+# temp_dict = {}
+daily_dict = {}
 
 num_items = 0
 total_sum_min = 0
@@ -65,25 +66,42 @@ total_sum_max = 0
 days = len(json_data['DailyForecasts'])
 days_list = days_in_data(days)
 
+t_temp_min = 100
+t_temp_max = 0
 # Pull through the data
 
 for day in days_list:
-    num_items+= 1
+    num_items += 1
+    date = convert_date(json_data['DailyForecasts'][day]['Date'])
     min_temp = convert_f_to_c(json_data['DailyForecasts'][day]['Temperature']['Minimum']['Value'])
-    date_min = json_data['DailyForecasts'][day]['Date']
     total_sum_min += min_temp
-    date_min = convert_date(date_min)
     max_temp = convert_f_to_c(json_data['DailyForecasts'][day]['Temperature']['Maximum']['Value'])
-    date_max = json_data['DailyForecasts'][day]['Date']
-    date_max = convert_date(date_max)
     total_sum_max += max_temp
     day_desc = json_data['DailyForecasts'][day]['Day']['LongPhrase']
     chance_rain_day = json_data['DailyForecasts'][day]['Day']['RainProbability']
     night_desc = json_data['DailyForecasts'][day]['Night']['LongPhrase']
     chance_rain_night = json_data['DailyForecasts'][day]['Night']['RainProbability']
-    my_dict[day] = [min_temp, date_min, max_temp, date_max, day_desc, chance_rain_day, night_desc, chance_rain_night]
-#                       0        1          2         3         4            5              6               7
+    if min_temp < t_temp_min:
+        t_temp_min = min_temp
+        t_temp_mindate = date
+    else:
+        pass
+    if max_temp > t_temp_max:
+        t_temp_max = max_temp
+        t_temp_maxdate = date
+    else:
+        pass
+    # temp_dict = [date, min_temp, max_temp]
+    daily_dict[day] = [date, min_temp, max_temp, day_desc, chance_rain_day, night_desc, chance_rain_night]
 
+#                       0        1          2         3         4            5              6               7
+print(t_temp_min)
+print(t_temp_mindate)
+print(t_temp_max)
+print(t_temp_maxdate)
+
+# print(temp_dict)
+# print(daily_dict)
 # Calculate Minimum, Maximum and Mean temperatures
 
 mean_min = format_temperature(calculate_mean(total_sum_min, num_items))
@@ -93,11 +111,13 @@ mean_max = format_temperature(calculate_mean(total_sum_max, num_items))
 
 # Format Minimum and Maximum temperatures
 
-minimum = min(my_dict.values())
-minimum_date = minimum[1]
-min_temp_format = format_temperature(minimum[0])
-maximum = max(my_dict.values())
-max_temp_format = format_temperature(maximum[2])
+# minimum = min(temp_dict.values())
+# minimum_date = minimum[2]
+# min_temp_format = format_temperature(minimum[0])
+
+# maximum = max(temp_dict.values())
+# maximum_date = maximum[2]
+# max_temp_format = format_temperature(maximum[1])
 
 ##############################################################################################
 

@@ -83,31 +83,49 @@ def process_weather(forecast_file):
     
     # Set Variables, Dictionaries and Lists
     days_list = []
-    print(days_list)
-    my_dict = {}
+    temp_dict = {}
+    daily_dict = {}
 
     num_items = 0
     total_sum_min = 0
     total_sum_max = 0
-    day_c = len(json_data['DailyForecasts'])
-    days_list = days_in_data(day_c)  
+    days = len(json_data['DailyForecasts'])
+    days_list = days_in_data(days)
+
+    t_temp_min = 100
+    t_temp_max = 0
 
     # Pull through the data
 
     for day in days_list:
-        num_items+= 1
+        num_items += 1
+        date = convert_date(json_data['DailyForecasts'][day]['Date'])
         min_temp = convert_f_to_c(json_data['DailyForecasts'][day]['Temperature']['Minimum']['Value'])
-        date_min = json_data['DailyForecasts'][day]['Date']
         total_sum_min += min_temp
         max_temp = convert_f_to_c(json_data['DailyForecasts'][day]['Temperature']['Maximum']['Value'])
-        date_max = json_data['DailyForecasts'][day]['Date']
         total_sum_max += max_temp
         day_desc = json_data['DailyForecasts'][day]['Day']['LongPhrase']
         chance_rain_day = json_data['DailyForecasts'][day]['Day']['RainProbability']
         night_desc = json_data['DailyForecasts'][day]['Night']['LongPhrase']
         chance_rain_night = json_data['DailyForecasts'][day]['Night']['RainProbability']
-        my_dict[day] = [min_temp, date_min, max_temp, date_max, day_desc, chance_rain_day, night_desc, chance_rain_night]
-    #                       0        1          2         3         4            5              6               7
+        if min_temp < t_temp_min:
+            t_temp_min = min_temp
+            t_temp_mindate = date
+        else:
+            pass
+        if max_temp > t_temp_max:
+            t_temp_max = max_temp
+            t_temp_maxdate = date
+        else:
+            pass
+        
+        temp_dict[day] = [min_temp, max_temp, date]
+        daily_dict[day] = [date, min_temp, max_temp, day_desc, chance_rain_day, night_desc, chance_rain_night]
+    #                       0        1          2         3          4              5              6               
+    
+    # print(temp_dict)
+    # print(daily_dict)
+
     # Calculate Minimum, Maximum and Mean temperatures
 
     mean_min = format_temperature(calculate_mean(total_sum_min, num_items))
@@ -116,43 +134,36 @@ def process_weather(forecast_file):
     # print(mean_max)
 
     # Format Minimum and Maximum temperatures
-
-    minimum = min(my_dict.values())
-    min_temp_format = format_temperature(minimum[0])
-    maximum = max(my_dict.values())
-    print(maximum)
-    max_temp_format = format_temperature(maximum[2])
+    min_temp_format = format_temperature(t_temp_min)
+    max_temp_format = format_temperature(t_temp_max)
 
     ##############################################################################################
 
     # Print messages to user
 
+    str_Output = ""
     Output_gen1 = (f"{num_items} Day Overview\n")
-    Output_gen2 = (f"    The lowest temperature will be {min_temp_format}, and will occur on {convert_date((minimum[1]))}.\n")
-    Output_gen3 = (f"    The highest temperature will be {max_temp_format}, and will occur on {maximum[3]}.\n")
+    Output_gen2 = (f"    The lowest temperature will be {min_temp_format}, and will occur on {t_temp_mindate}.\n")
+    Output_gen3 = (f"    The highest temperature will be {max_temp_format}, and will occur on {t_temp_maxdate}.\n")
     Output_gen4 = (f"    The average low this week is {mean_min}.\n")
     Output_gen5 = (f"    The average high this week is {mean_max}.\n")
-    strOutput = Output_gen1 + Output_gen2 + Output_gen3 + Output_gen4 + Output_gen5
-    print(strOutput)
-    for key, value in my_dict.items():
-        # Outputprint()
-        print(f"-------- {value[1]} --------")
-        print(f"Minimum Temperature: {format_temperature(value[0])}")
-        print(f"Maximum Temperature: {format_temperature(value[2])}")
-        print(f"Daytime: {value[4]}")
-        print(f"    Chance of rain:  {value[5]}%")
-        print(f"Nighttime: {value[6]}")
-        print(f"    Chance of rain:  {value[7]}%")
-    print()
-    print()
+    str_Output = Output_gen1 + Output_gen2 + Output_gen3 + Output_gen4 + Output_gen5
+    for key, value in daily_dict.items():
+        Output_daily0 = ("\n")
+        Output_daily1 = (f"-------- {value[0]} --------\n")
+        Output_daily2 = (f"Minimum Temperature: {format_temperature(value[1])}\n")
+        Output_daily3 = (f"Maximum Temperature: {format_temperature(value[2])}\n")
+        Output_daily4 = (f"Daytime: {value[3]}\n")
+        Output_daily5 = (f"    Chance of rain:  {value[4]}%\n")
+        Output_daily6 = (f"Nighttime: {value[5]}\n")
+        Output_daily7 = (f"    Chance of rain:  {value[6]}%\n")
+        str_Output = str_Output + Output_daily0 + Output_daily1 + Output_daily2 + Output_daily3 + Output_daily4 + Output_daily5 + Output_daily6 + Output_daily7
+    str_Output = str_Output +"\n"
 
-    str_Output = ""
-    str_Output = str_Output 
-
-    # return f"{num_items} Day Overview\n    The lowest temperature will be {min_temp_format}, and will occur on {str(minimum[1])}.\n    The highest temperature will be {max_temp_format}, and will occur on {convert_date(maximum[3])}.\n    The average low this week is {mean_min}.\n    The average high this week is {mean_max}."
-
+    return str_Output
+    
 if __name__ == "__main__":
-    print(process_weather("data/forecast_8days.json"))
+    print(process_weather("data/forecast_5days_a.json"))
 
 # if __name__ == "__main__":
 #     process_weather("data/forecast_5days_b.json")
