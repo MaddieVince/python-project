@@ -22,7 +22,7 @@ class Part1Tests(unittest.TestCase):
         result_string = process_weather(test_data)
         self.assertEqual(expected_string, result_string)
 
-    def test_correct_output_10days(self):
+    def test_correct_output_8days(self):
         test_data = "data/forecast_8days.json"
         with open("tests/expected_output/forecast_8days_output.txt", encoding="utf8") as txt_file:
             expected_string = txt_file.read()
