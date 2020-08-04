@@ -26,7 +26,7 @@ def convert_date(iso_string):
     return d.strftime("%A %d %B %Y")
 
 with open("data/forecast_5days_a.json") as json_file:
-        json_data = json.load(json_file)
+    json_data = json.load(json_file)
 
 df = json_data
 
